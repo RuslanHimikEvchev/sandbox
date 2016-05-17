@@ -97,6 +97,7 @@ Application.prototype.makeRequest_ = function(url) {
 };
 
 Application.prototype.setXml_ = function() {
+    console.log( this.httpRequest_.responseXML);
     this.xmlBox_ = this.httpRequest_.responseText;
 };
 
