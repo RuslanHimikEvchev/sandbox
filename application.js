@@ -7,23 +7,7 @@
  * Handles user interaction and creates the player and ads controllers.
  */
 var Application = function() {
-    this.xmlBox_ = document.getElementById('requestXMLInput');
-    document.getElementById('videoLink').addEventListener(
-        'click',
-        this.bind_(this, this.requestVideoSample_),
-        false);
-    document.getElementById('nonLinearLink').addEventListener(
-        'click',
-        this.bind_(this, this.requestNonLinearSample_),
-        false);
-    document.getElementById('sampleLink').addEventListener(
-        'click',
-        this.bind_(this, this.requestSample_),
-        false);
-    /*  document.getElementById('gameLink').addEventListener(
-     'click',
-     this.bind_(this, this.requestGameSample_),
-     false);*/
+    this.xmlBox_ = '';
     this.console_ = document.getElementById('console');
     this.playButton_ = document.getElementById('playpause');
     this.playButton_.addEventListener(
@@ -66,7 +50,6 @@ var Application = function() {
 
 Application.prototype.log = function(message) {
     console.log(message);
-    this.console_.innerHTML = this.console_.innerHTML + '<br/>' + message;
 };
 
 Application.prototype.resumeAfterAd = function() {
@@ -92,20 +75,8 @@ Application.prototype.bind_ = function(thisObj, fn) {
     };
 };
 
-Application.prototype.requestVideoSample_ = function() {
+Application.prototype.makeAdRequest = function() {
     this.makeRequest_('http://ssp.c8.net.ua/getcode.php?key=d41de446ec0ef54335f36466c0a2cb72&ssp_id=3634&pid=6&site_id=f5399&format_id=8&ct=xml&device_id=&app_id=&version=3');
-};
-
-Application.prototype.requestNonLinearSample_ = function() {
-    this.makeRequest_('http://ryanthompson591.github.io/vpaidExamples/xmlExamples/NonLinearSample.xml');
-};
-
-Application.prototype.requestSample_ = function() {
-    this.makeRequest_('http://ryanthompson591.github.io/vpaidExamples/xmlExamples/TesterSample.xml');
-};
-
-Application.prototype.requestGameSample_ = function() {
-    this.makeRequest_('http://ryanthompson591.github.io/vpaidExamples/xmlExamples/GameSample.xml');
 };
 
 Application.prototype.makeRequest_ = function(url) {
@@ -121,21 +92,22 @@ Application.prototype.makeRequest_ = function(url) {
     }
     this.httpRequest_.onreadystatechange = this.bind_(this, this.setXml_);
     this.httpRequest_.open('GET', url);
+    this.httpRequest_.withCredentials = true;
     this.httpRequest_.send();
 };
 
 Application.prototype.setXml_ = function() {
-    this.xmlBox_.value = this.httpRequest_.responseText;
+    this.xmlBox_ = this.httpRequest_.responseText;
 };
 
 Application.prototype.onClick_ = function() {
     if (!this.adsDone_) {
         this.log('Click event.');
-        if (this.xmlBox_.value == '') {
+        if (this.xmlBox_ == '') {
             this.log("Error: please fill in xml");
             return;
         } else {
-            this.adXml_ = this.xmlBox_.value;
+            this.adXml_ = this.xmlBox_;
         }
         // The user clicked/tapped - inform the ads controller that this code
         // is being run in a user action thread.
@@ -186,24 +158,24 @@ Application.prototype.onFullscreenClick_ = function() {
             document.documentElement.webkitRequestFullScreen ||
             document.documentElement.mozRequestFullScreen;
         if (requestFullscreen) {
-            this.fullscreenWidth = window.screen.width;
-            this.fullscreenHeight = window.screen.height;
+            this.fullscreenWidth = window.innerWidth;
+            this.fullscreenHeight = window.innerHeight;
             requestFullscreen.call(document.documentElement);
         } else {
             this.fullscreenWidth = window.innerWidth;
             this.fullscreenHeight = window.innerHeight;
             this.onFullscreenChange_();
         }
+        requestFullscreen.call(document.documentElement);
     }
-    requestFullscreen.call(document.documentElement);
 };
 
 Application.prototype.updateChrome_ = function() {
     if (this.playing_) {
-        this.playButton_.textContent = 'II';
+        this.playButton_.style.backgroundImage = 'url(//b.c8.net.ua/b/img/vpaid/pause.png)';
     } else {
         // Unicode play symbol.
-        this.playButton_.textContent = String.fromCharCode(9654);
+        this.playButton_.style.backgroundImage = 'url(//b.c8.net.ua/b/img/vpaid/play.png)';
     }
 };
 

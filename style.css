@@ -15,7 +15,6 @@ header {
 footer {
     margin-top: 20px;
 }
-
 #container {
     margin-left: auto;
     margin-right: auto;
@@ -26,7 +25,6 @@ footer {
     position: relative;
     background-color: #000;
     border-radius: 5px;
-    box-shadow: 0px 0px 20px rgba(50, 50, 50, 0.95);
     border: 2px #ccc solid;
     width: 640px;
     height: 360px;
@@ -35,55 +33,46 @@ footer {
     margin-top: 20px;
 }
 
-#content-wrapper {
-    position:relative;
-    top: 0px;
-    left: 0px
-}
-
 #playpause {
     position: absolute;
-    left: 20px;
-    bottom: 20px;
+    left: 0;
+    bottom: 0;
     height: 40px;
-    width: 100px;
-    border-style: none;
-    font-weight: bold;
-    font-size: 25px;
-    opacity: 0.5;
-    background-color: #fff;
-    border-radius: 5px;
+    width: 40px;
+    border-radius: 100px;
+    background-image: url(//b.c8.net.ua/b/img/vpaid/play.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 40px 40px;
+    background-color: rgba(255,255,255, 0);
+    color: rgba(255,255,255, 0);
     border: 1px transparent solid;
-    color: #000;
     cursor: pointer;
     line-height: 0;
 }
 
 #playpause:hover {
-    border: 1px #f00 solid;
+    border: 1px white solid;
     color: #f00;
 }
 
 #fullscreen {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
-    height: 40px;
-    width: 100px;
-    border-style: none;
-    font-weight: bold;
-    font-size: 25px;
-    opacity: 0.5;
-    background-color: #fff;
+    bottom: 0px;
+    right: 0px;
+    height: 35px;
+    width: 35px;
+    background-image: url(//b.c8.net.ua/b/img/vpaid/expand.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 35px 35px;
     border-radius: 5px;
-    border: 1px transparent solid;
-    color: #000;
     cursor: pointer;
     line-height: 0;
 }
 
 #fullscreen:hover {
-    border: 1px #f00 solid;
+    border: 1px white solid;
     color: #f00;
 }
 
@@ -118,4 +107,8 @@ footer {
     color: blue;
     text-decoration: underline;
     cursor: pointer;
+}
+:-webkit-full-screen #container {
+    width: 100%;
+    height: 100%;
 }

@@ -10,7 +10,6 @@ var VideoPlayer = function() {
     this.contentPlayer = document.getElementById('content');
     this.adContainer = document.getElementById('adcontainer');
     this.videoPlayerContainer_ = document.getElementById('videoplayer');
-
     this.width = 640;
     this.height = 360;
 };

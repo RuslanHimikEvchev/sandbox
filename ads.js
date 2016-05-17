@@ -148,8 +148,6 @@ Ads.prototype.onContentResumeRequested_ = function(adErrorEvent) {
 
 Ads.prototype.onAdEvent_ = function(adEvent) {
     this.application_.log('Ad event: ' + adEvent.type);
-    var img = new Image;
-    img.src = 'http://192.168.1.150/audit.php';
     if (adEvent.type == google.ima.AdEvent.Type.CLICK) {
         this.application_.adClicked();
     }
