@@ -110,6 +110,7 @@ Ads.prototype.processAdsManager_ = function(adsManager) {
         google.ima.AdEvent.Type.PAUSED,
         google.ima.AdEvent.Type.STARTED,
         google.ima.AdEvent.Type.THIRD_QUARTILE];
+    var events = [google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.STARTED];
     for (var index in events) {
         adsManager.addEventListener(
             events[index],
@@ -117,7 +118,6 @@ Ads.prototype.processAdsManager_ = function(adsManager) {
             false,
             this);
     }
-
     var initWidth, initHeight;
     if (this.application_.fullscreen) {
         initWidth = this.application_.fullscreenWidth;
@@ -132,6 +132,7 @@ Ads.prototype.processAdsManager_ = function(adsManager) {
         google.ima.ViewMode.NORMAL);
 
     adsManager.start();
+    console.log(adsManager);
 };
 
 Ads.prototype.onContentPauseRequested_ = function(adErrorEvent) {
