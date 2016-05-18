@@ -166,8 +166,8 @@ C8VpaidApp.prototype.onFullscreenClick_ = function() {
             this.videoPlayer_.videoPlayerContainer_.webkitRequestFullScreen ||
             this.videoPlayer_.videoPlayerContainer_.mozRequestFullScreen;
         if (requestFullscreen) {
-            this.fullscreenWidth = window.innerWidth;
-            this.fullscreenHeight = window.innerHeight;
+            this.fullscreenWidth = screen.width;
+            this.fullscreenHeight = screen.height;
             requestFullscreen.call(this.videoPlayer_.videoPlayerContainer_);
         } else {
             this.fullscreenWidth = window.innerWidth;

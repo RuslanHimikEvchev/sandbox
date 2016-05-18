@@ -9,7 +9,6 @@
 var C8VpaidPlayer = function(contentPlayerId, adContainer, videoPlayerContainer) {
     this.contentPlayer = document.getElementById(contentPlayerId);
     this.adContainer = document.getElementById(adContainer);
-    this.timeline_ = document.getElementById('timeline');
     this.videoPlayerContainer_ = document.getElementById(videoPlayerContainer);
 };
 
@@ -47,10 +46,6 @@ C8VpaidPlayer.prototype.play = function() {
     this.contentPlayer.addEventListener('timeupdate', this.bind_(this, this.progress), false);
 
     this.contentPlayer.play();
-};
-
-C8VpaidPlayer.prototype.progress = function () {
-    this.timeline_.style.width = this.contentPlayer.currentTime / this.contentPlayer.duration * 100 + '%';
 };
 
 C8VpaidPlayer.prototype.pause = function() {
