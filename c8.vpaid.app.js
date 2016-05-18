@@ -6,15 +6,11 @@
 /**
  * Handles user interaction and creates the player and ads controllers.
  */
-var Application = function() {
-    this.adTagBox_ = document.getElementById('tagText');
-    this.sampleAdTag_ = document.getElementById('sampleAdTag');
-    this.sampleAdTag_.addEventListener(
-        'click',
-        this.bind_(this, this.onSampleAdTagClick_),
-        false);
+var C8VpaidApp = function(player) {
+    this.xmlBox_ = '';
     this.console_ = document.getElementById('console');
     this.playButton_ = document.getElementById('playpause');
+    this.vastParser = new C8VastParser();
     this.playButton_.addEventListener(
         'click',
         this.bind_(this, this.onClick_),
@@ -39,73 +35,87 @@ var Application = function() {
             false);
     }
 
-
     this.playing_ = false;
     this.adsActive_ = false;
     this.adsDone_ = false;
     this.fullscreen = false;
 
-    this.videoPlayer_ = new VideoPlayer();
-    this.ads_ = new Ads(this, this.videoPlayer_);
-    this.adTagUrl_ = '';
+    this.videoPlayer_ = player;
+    this.ads_ = new C8VpaidAds(this, this.videoPlayer_);
+    this.adXml_ = '';
 
-    this.videoEndedCallback_ = this.bind_(this, this.onContentEnded_);
-    this.setVideoEndedCallbackEnabled(true);
+    this.videoPlayer_.registerVideoEndedCallback(
+        this.bind_(this, this.onContentEnded_));
+    this.httpRequest_ = null;
 };
 
-Application.prototype.SAMPLE_AD_TAG_ = 'https://pubads.g.doubleclick.net/' +
-    'gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&' +
-    'ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&' +
-    'unviewed_position_start=1&' +
-    'cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=';
-
-Application.prototype.setVideoEndedCallbackEnabled = function(enable) {
-    if (enable) {
-        this.videoPlayer_.registerVideoEndedCallback(this.videoEndedCallback_);
-    } else {
-        this.videoPlayer_.removeVideoEndedCallback(this.videoEndedCallback_);
-    }
-};
-
-Application.prototype.log = function(message) {
+C8VpaidApp.prototype.log = function(message) {
     console.log(message);
-    this.console_.innerHTML = this.console_.innerHTML + '<br/>' + message;
 };
 
-Application.prototype.resumeAfterAd = function() {
+C8VpaidApp.prototype.resumeAfterAd = function() {
     this.videoPlayer_.play();
     this.adsActive_ = false;
     this.updateChrome_();
 };
 
-Application.prototype.pauseForAd = function() {
+C8VpaidApp.prototype.pauseForAd = function() {
     this.adsActive_ = true;
     this.playing_ = true;
     this.videoPlayer_.pause();
     this.updateChrome_();
 };
 
-Application.prototype.adClicked = function() {
+C8VpaidApp.prototype.adClicked = function() {
     this.updateChrome_();
 };
 
-Application.prototype.bind_ = function(thisObj, fn) {
+C8VpaidApp.prototype.bind_ = function(thisObj, fn) {
     return function() {
         fn.apply(thisObj, arguments);
     };
 };
 
-Application.prototype.onSampleAdTagClick_ = function() {
-    this.adTagBox_.value = this.SAMPLE_AD_TAG_;
+C8VpaidApp.prototype.makeAdRequest = function() {
+    //this.makeRequest_('http://192.168.1.153:84/getvast.php');
+    this.makeRequest_('http://ssp.c8.net.ua/getcode.php?key=d41de446ec0ef54335f36466c0a2cb72&ssp_id=3634&pid=6&site_id=f5399&format_id=8&ct=xml&device_id=&app_id=&version=3');
 };
 
-Application.prototype.onClick_ = function() {
+C8VpaidApp.prototype.makeRequest_ = function(url) {
+    if (window.XMLHttpRequest) {
+        this.httpRequest_ = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        try {
+            this.httpRequest_ = new ActiveXObject("Msxml2.XMLHTTP");
+        }
+        catch (e) {
+            this.httpRequest_ = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+    }
+    this.httpRequest_.onreadystatechange = this.bind_(this, this.setVastParseXml);
+    this.httpRequest_.onreadystatechange = this.bind_(this, this.setXml_);
+    this.httpRequest_.open('GET', url);
+    this.httpRequest_.withCredentials = true;
+    this.httpRequest_.send();
+};
+
+C8VpaidApp.prototype.setVastParseXml = function () {
+    if(this.httpRequest_.responseXML != null)
+        this.vastParser.setAdXml_(this.httpRequest_.responseXML);
+};
+
+C8VpaidApp.prototype.setXml_ = function() {
+    this.xmlBox_ = this.httpRequest_.responseText;
+};
+
+C8VpaidApp.prototype.onClick_ = function() {
     if (!this.adsDone_) {
-        if (this.adTagBox_.value == '') {
-            this.log('Error: please fill in an ad tag');
+        this.log('Click event.');
+        if (this.xmlBox_ == '') {
+            this.log("Error: please fill in xml");
             return;
         } else {
-            this.adTagUrl_ = this.adTagBox_.value;
+            this.adXml_ = this.xmlBox_;
         }
         // The user clicked/tapped - inform the ads controller that this code
         // is being run in a user action thread.
@@ -139,11 +149,10 @@ Application.prototype.onClick_ = function() {
     this.updateChrome_();
 };
 
-Application.prototype.onFullscreenClick_ = function() {
+C8VpaidApp.prototype.onFullscreenClick_ = function() {
     if (this.fullscreen) {
         // The video is currently in fullscreen mode
-        var cancelFullscreen = document.exitFullscreen ||
-            document.exitFullScreen ||
+        var cancelFullscreen = document.exitFullScreen ||
             document.webkitCancelFullScreen ||
             document.mozCancelFullScreen;
         if (cancelFullscreen) {
@@ -153,40 +162,36 @@ Application.prototype.onFullscreenClick_ = function() {
         }
     } else {
         // Try to enter fullscreen mode in the browser
-        var requestFullscreen = document.documentElement.requestFullscreen ||
-            document.documentElement.webkitRequestFullscreen ||
-            document.documentElement.mozRequestFullscreen ||
-            document.documentElement.requestFullScreen ||
-            document.documentElement.webkitRequestFullScreen ||
-            document.documentElement.mozRequestFullScreen;
+        var requestFullscreen = this.videoPlayer_.videoPlayerContainer_.requestFullScreen ||
+            this.videoPlayer_.videoPlayerContainer_.webkitRequestFullScreen ||
+            this.videoPlayer_.videoPlayerContainer_.mozRequestFullScreen;
         if (requestFullscreen) {
-            this.fullscreenWidth = window.screen.width;
-            this.fullscreenHeight = window.screen.height;
-            requestFullscreen.call(document.documentElement);
+            this.fullscreenWidth = window.innerWidth;
+            this.fullscreenHeight = window.innerHeight;
+            requestFullscreen.call(this.videoPlayer_.videoPlayerContainer_);
         } else {
             this.fullscreenWidth = window.innerWidth;
             this.fullscreenHeight = window.innerHeight;
             this.onFullscreenChange_();
         }
+        requestFullscreen.call(this.videoPlayer_.videoPlayerContainer_);
     }
-    requestFullscreen.call(document.documentElement);
 };
 
-Application.prototype.updateChrome_ = function() {
+C8VpaidApp.prototype.updateChrome_ = function() {
     if (this.playing_) {
-        this.playButton_.textContent = 'II';
+        this.playButton_.style.backgroundImage = 'url(//b.c8.net.ua/b/img/vpaid/pause.png)';
     } else {
         // Unicode play symbol.
-        this.playButton_.textContent = String.fromCharCode(9654);
+        this.playButton_.style.backgroundImage = 'url(//b.c8.net.ua/b/img/vpaid/play.png)';
     }
 };
 
-Application.prototype.loadAds_ = function() {
-    this.videoPlayer_.removePreloadListener();
-    this.ads_.requestAds(this.adTagUrl_);
+C8VpaidApp.prototype.loadAds_ = function() {
+    this.ads_.requestXml(this.adXml_);
 };
 
-Application.prototype.onFullscreenChange_ = function() {
+C8VpaidApp.prototype.onFullscreenChange_ = function() {
     if (this.fullscreen) {
         // The user just exited fullscreen
         // Resize the ad container
@@ -213,12 +218,12 @@ Application.prototype.onFullscreenChange_ = function() {
     }
 };
 
-Application.prototype.makeAdsFullscreen_ = function() {
+C8VpaidApp.prototype.makeAdsFullscreen_ = function() {
     this.ads_.resize(
         this.fullscreenWidth,
         this.fullscreenHeight);
 };
 
-Application.prototype.onContentEnded_ = function() {
+C8VpaidApp.prototype.onContentEnded_ = function() {
     this.ads_.contentEnded();
 };

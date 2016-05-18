@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="test.place.css"/>
     <script type="text/javascript" src="//s0.2mdn.net/instream/html5/ima3.js"></script>
-    <script type="text/javascript" src="application.js"></script>
-    <script type="text/javascript" src="ads.js"></script>
-    <script type="text/javascript" src="video_player.js"></script>
-    <title>Sample javascript VPAID ads</title>
+    <script type="text/javascript" src="c8.vpaid.app.js"></script>
+    <script type="text/javascript" src="c8.vpaid.ads.js"></script>
+    <script type="text/javascript" src="c8.vpaid.vp.js"></script>
+    <script type="text/javascript" src="c8.vast.parser.js"></script>
 </head>
 <body>
-<div id="">
+<div id="test" style="width: 640px; height: 360px;">
     <div id="videoplayer">
         <video id="content" muted>
             <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.webm"></source>
@@ -19,16 +19,31 @@
         </div>
         <div id="controls">
             <div id="playpause"></div>
+            <div id="progress">
+                <div id="timeline">
+                </div>
+            </div>
             <div id="fullscreen"></div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    var application = null;
-    window.onload = function() {
-        application = new Application();
-        application.makeAdRequest();
+    var C8Player = {
+        contentPlayerId: 'content',
+        adContainer: 'adcontainer',
+        videoPlayerContainer: 'videoplayer'
     };
+    var player = new C8VpaidPlayer(
+            C8Player.contentPlayerId,
+            C8Player.adContainer,
+            C8Player.videoPlayerContainer
+    );
+    document.getElementById(C8Player.contentPlayerId).addEventListener('loadedmetadata', function () {
+            player.setVideoHeight(document.getElementById(C8Player.videoPlayerContainer).clientHeight);
+            player.setVideoWidth(document.getElementById(C8Player.videoPlayerContainer).clientWidth);
+    }, false);
+    var C8Application = new C8VpaidApp(player);
+    C8Application.makeAdRequest();
 </script>
 </body>
 </html>

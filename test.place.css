@@ -26,20 +26,41 @@ footer {
     background-color: #000;
     border-radius: 5px;
     border: 2px #ccc solid;
-    width: 640px;
-    height: 360px;
+    height: 100%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
 }
 
+#progress{
+    position: absolute;
+    height: 10%;
+    width: 80%;
+    float: left;
+    left:  10%;
+    right:  10%;
+    bottom: 0;
+}
+
+#timeline{
+    width: 100%;
+    height: 6px;
+    background-color: green;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    padding-left: 0;
+}
+
 #playpause {
+    float: left;
     position: absolute;
     left: 0;
     bottom: 0;
-    height: 40px;
-    width: 40px;
-    border-radius: 100px;
+    height: 10%;
+    width: 7%;
+    border-radius: 5px;
     background-image: url(//b.c8.net.ua/b/img/vpaid/play.png);
     background-position: center;
     background-repeat: no-repeat;
@@ -60,8 +81,8 @@ footer {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    height: 35px;
-    width: 35px;
+    height: 10%;
+    width: 7%;
     background-image: url(//b.c8.net.ua/b/img/vpaid/expand.png);
     background-position: center;
     background-repeat: no-repeat;
@@ -76,12 +97,15 @@ footer {
     color: #f00;
 }
 
-#content, #adcontainer {
+#adcontainer {
     position: absolute;
     top: 0px;
     left: 0px;
-    width: 640px;
-    height: 360px;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 100%;
+    height: 100%;
 }
 
 #console {

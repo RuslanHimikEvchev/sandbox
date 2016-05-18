@@ -6,15 +6,22 @@
 /**
  * Handles video player functionality.
  */
-var VideoPlayer = function() {
-    this.contentPlayer = document.getElementById('content');
-    this.adContainer = document.getElementById('adcontainer');
-    this.videoPlayerContainer_ = document.getElementById('videoplayer');
-    this.width = 640;
-    this.height = 360;
+var C8VpaidPlayer = function(contentPlayerId, adContainer, videoPlayerContainer) {
+    this.contentPlayer = document.getElementById(contentPlayerId);
+    this.adContainer = document.getElementById(adContainer);
+    this.timeline_ = document.getElementById('timeline');
+    this.videoPlayerContainer_ = document.getElementById(videoPlayerContainer);
 };
 
-VideoPlayer.prototype.preloadContent = function(contentLoadedAction) {
+C8VpaidPlayer.prototype.setVideoWidth = function (w) {
+    this.width = w;
+};
+
+C8VpaidPlayer.prototype.setVideoHeight = function (h) {
+    this.height = h;
+};
+
+C8VpaidPlayer.prototype.preloadContent = function(contentLoadedAction) {
     // If this is the initial user action on iOS or Android device,
     // simulate playback to enable the video element for later program-triggered
     // playback.
@@ -29,21 +36,34 @@ VideoPlayer.prototype.preloadContent = function(contentLoadedAction) {
     }
 };
 
-VideoPlayer.prototype.play = function() {
+C8VpaidPlayer.prototype.bind_ = function (thisObj, fn) {
+      return function () {
+          fn.apply(thisObj, arguments);
+      }
+};
+
+C8VpaidPlayer.prototype.play = function() {
+
+    this.contentPlayer.addEventListener('timeupdate', this.bind_(this, this.progress), false);
+
     this.contentPlayer.play();
 };
 
-VideoPlayer.prototype.pause = function() {
+C8VpaidPlayer.prototype.progress = function () {
+    this.timeline_.style.width = this.contentPlayer.currentTime / this.contentPlayer.duration * 100 + '%';
+};
+
+C8VpaidPlayer.prototype.pause = function() {
     this.contentPlayer.pause();
 };
 
-VideoPlayer.prototype.isMobilePlatform = function() {
+C8VpaidPlayer.prototype.isMobilePlatform = function() {
     return this.contentPlayer.paused &&
         (navigator.userAgent.match(/(iPod|iPhone|iPad)/) ||
         navigator.userAgent.toLowerCase().indexOf('android') > -1);
 };
 
-VideoPlayer.prototype.resize = function(
+C8VpaidPlayer.prototype.resize = function(
     position, top, left, width, height) {
     this.videoPlayerContainer_.style.position = position;
     this.videoPlayerContainer_.style.top = top + 'px';
@@ -54,7 +74,7 @@ VideoPlayer.prototype.resize = function(
     this.contentPlayer.style.height = height + 'px';
 };
 
-VideoPlayer.prototype.registerVideoEndedCallback = function(callback) {
+C8VpaidPlayer.prototype.registerVideoEndedCallback = function(callback) {
     this.contentPlayer.addEventListener(
         'ended',
         callback,
