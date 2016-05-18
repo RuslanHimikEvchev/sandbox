@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="test.place.css"/>
-    <script type="text/javascript" src="//s0.2mdn.net/instream/html5/ima3.js"></script>
-    <script type="text/javascript" src="c8.vpaid.app.js"></script>
-    <script type="text/javascript" src="c8.vpaid.ads.js"></script>
-    <script type="text/javascript" src="c8.vpaid.vp.js"></script>
-    <script type="text/javascript" src="c8.vast.parser.js"></script>
+    <link rel="stylesheet" type="text/css" href="//b.c8.net.ua/b/js/vpaid/test.place.css"/>
+    <script type="text/javascript" src="//b.c8.net.ua/b/js/vpaid/c8.vpaid.api.js"></script>
 </head>
 <body>
 <div id="test" style="width: 640px; height: 360px;">
     <div id="videoplayer">
         <video id="content">
+            <source src="http://brb.to/get/dl/673tbd2fe37pbpyitlyg32u3a.0.1139013157.2904560743.1463587620/Rammstein+-+Du+hast_%28720p%29.mp4"></source>
             <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.webm"></source>
-            <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4"></source>
         </video>
         <div id="adcontainer">
         </div>
@@ -27,19 +23,13 @@
     var C8Player = {
         contentPlayerId: 'content',
         adContainer: 'adcontainer',
-        videoPlayerContainer: 'videoplayer'
+        videoPlayerContainer: 'videoplayer',
+        playPause: 'playpause',
+        fullScreen: 'fullscreen',
+        playerW: 640,
+        playerH: 360
     };
-    var player = new C8VpaidPlayer(
-            C8Player.contentPlayerId,
-            C8Player.adContainer,
-            C8Player.videoPlayerContainer
-    );
-    document.getElementById(C8Player.contentPlayerId).addEventListener('loadedmetadata', function () {
-            player.setVideoHeight(document.getElementById(C8Player.videoPlayerContainer).clientHeight);
-            player.setVideoWidth(document.getElementById(C8Player.videoPlayerContainer).clientWidth);
-    }, false);
-    var C8Application = new C8VpaidApp(player);
-    C8Application.makeAdRequest();
+    var c8Api = new C8VpaidApi(C8Player);
 </script>
 </body>
 </html>

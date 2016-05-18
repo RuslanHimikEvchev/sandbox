@@ -6,7 +6,9 @@
 /**
  * Handles video player functionality.
  */
-var C8VpaidPlayer = function(contentPlayerId, adContainer, videoPlayerContainer) {
+var C8VpaidPlayer = function(contentPlayerId, adContainer, videoPlayerContainer, PlayPause, FullScreen) {
+    this.playPause_ = PlayPause;
+    this.fullscreen_ = FullScreen;
     this.contentPlayer = document.getElementById(contentPlayerId);
     this.adContainer = document.getElementById(adContainer);
     this.videoPlayerContainer_ = document.getElementById(videoPlayerContainer);
@@ -14,10 +16,12 @@ var C8VpaidPlayer = function(contentPlayerId, adContainer, videoPlayerContainer)
 
 C8VpaidPlayer.prototype.setVideoWidth = function (w) {
     this.width = w;
+    this.contentPlayer.style.width = w;
 };
 
 C8VpaidPlayer.prototype.setVideoHeight = function (h) {
     this.height = h;
+    this.contentPlayer.style.height = h;
 };
 
 C8VpaidPlayer.prototype.preloadContent = function(contentLoadedAction) {
@@ -35,16 +39,7 @@ C8VpaidPlayer.prototype.preloadContent = function(contentLoadedAction) {
     }
 };
 
-C8VpaidPlayer.prototype.bind_ = function (thisObj, fn) {
-      return function () {
-          fn.apply(thisObj, arguments);
-      }
-};
-
 C8VpaidPlayer.prototype.play = function() {
-
-    this.contentPlayer.addEventListener('timeupdate', this.bind_(this, this.progress), false);
-
     this.contentPlayer.play();
 };
 

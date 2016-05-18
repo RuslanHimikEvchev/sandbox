@@ -8,14 +8,13 @@
  */
 var C8VpaidApp = function(player) {
     this.xmlBox_ = '';
-    this.console_ = document.getElementById('console');
-    this.playButton_ = document.getElementById('playpause');
+    this.playButton_ = document.getElementById(player.playPause_);
     this.vastParser = new C8VastParser();
     this.playButton_.addEventListener(
         'click',
         this.bind_(this, this.onClick_),
         false);
-    this.fullscreenButton_ = document.getElementById('fullscreen');
+    this.fullscreenButton_ = document.getElementById(player.fullscreen_);
     this.fullscreenButton_.addEventListener(
         'click',
         this.bind_(this, this.onFullscreenClick_),
